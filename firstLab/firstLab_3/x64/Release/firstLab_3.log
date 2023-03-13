@@ -1,0 +1,7 @@
+﻿  firstLab_3.cpp
+C:\Users\sasha\source\repos\firstLab\firstLab_3\firstLab_3.cpp(32,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 78 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  firstLab_3.vcxproj -> C:\Users\sasha\source\repos\firstLab\x64\Release\firstLab_3.exe
