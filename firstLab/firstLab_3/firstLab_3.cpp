@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
 #include "mpi.h"
+#include <vector>
 
 #pragma warning( disable : 6001)
 #pragma warning( disable : 6385)
 
-void FillMatrix(int* m, int numberOfElements, int l, int r)
+void FillMatrix(std::vector<int>& m, int numberOfElements, int l, int r)
 {
     for (int i = 0; i < numberOfElements; ++i)
     {
@@ -26,34 +27,34 @@ void PrintMatrix(int* m, int h, int w)
     std::cout << '\n';
 }
 
+
 int main(int argc, char** argv)
-{
+ {
     MPI_Init(&argc, &argv);
     srand(time(NULL));
     int rank, size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    int k = std::stoi(argv[argc - 3]);
-    int l = std::stoi(argv[argc - 2]);
-    int m = std::stoi(argv[argc - 1]);
-    int firstMatrixSize = k * l;
-    int secondMatrixSize = l * m;
-    int* a = new int[firstMatrixSize];
-    int* b = new int[secondMatrixSize];
+    int k = std::stoi(argv[1]);
+    int l = std::stoi(argv[2]);
+    int m = std::stoi(argv[3]);
+    std::vector<int> a;
+    std::vector<int> b(l * m);
     if (rank == 0)
     {
-        FillMatrix(a, firstMatrixSize, -1, 0);
-        FillMatrix(b, secondMatrixSize, -1 ,0);
-        PrintMatrix(a, k, l);
-        PrintMatrix(b, l, m);
+        a.resize(k * l);
+        FillMatrix(a, k * l, -1, 0);
+        FillMatrix(b, l * m, -1, 0);
+        //PrintMatrix(a.data(), k, l);
+        //PrintMatrix(b.data(), l, m);
     }
-    MPI_Bcast(b, secondMatrixSize, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Bcast(b.data(), l * m, MPI_INT, 0, MPI_COMM_WORLD);
     int rowsforProcess = k / size;
     int remainder = k % size;
-    int* sendCounts = new int[size];
-    int* displs = new int[size];
-    int* sendCountsRec = new int[size];
-    int* displsRec = new int[size];
+    std::vector<int>sendCounts(size);
+    std::vector<int>displs(size);
+    std::vector<int>sendCountsRec(size);
+    std::vector<int>displsRec(size);
     int offset = 0;
     int offsetRec = 0;
     for (int i = 0; i < size; ++i)
@@ -71,34 +72,30 @@ int main(int argc, char** argv)
             sendCountsRec[i] += m;
             offset += l;
             offsetRec += m;
-
         }
     }
-    int* proc = new int[sendCounts[rank]];
-    MPI_Scatterv(a, sendCounts, displs, MPI_INT, proc, sendCounts[rank], MPI_INT, 0, MPI_COMM_WORLD);
-    int* tempRes = new int[m * sendCounts[rank] / l];
-    for (int i = 0; i < m * sendCounts[rank] / l; ++i)
-    {
-        tempRes[i] = 0;
-    }
-    int count = 0;
+    std::vector<int> proc(sendCounts[rank]);
+    MPI_Scatterv(a.data(), sendCounts.data(), displs.data(), MPI_INT, proc.data(), sendCounts[rank], MPI_INT, 0, MPI_COMM_WORLD);
+    std::vector<int> tempRes(sendCounts[rank] / l * m);
     for (int i = 0; i < sendCounts[rank] / l; ++i)
     {
         for (int j = 0; j < m; ++j)
         {
+            int sumRes = 0;
             for (int p = 0; p < l; ++p)
             {
-                tempRes[i * m + j] += proc[i * l + p] * b[p * m + j];
+                sumRes += proc[i * l + p] * b[p * m + j];
             }
+            tempRes[i * m + j] = sumRes;
         }
     }
-    int* result = new int[k * m];
-    MPI_Gatherv(tempRes, sendCountsRec[rank],
-        MPI_INT, result,
-        sendCountsRec, displsRec, MPI_INT, 0, MPI_COMM_WORLD);
+    std::vector<int> result(k * m);
+    MPI_Gatherv(tempRes.data(), sendCountsRec[rank],
+        MPI_INT, result.data(),
+        sendCountsRec.data(), displsRec.data(), MPI_INT, 0, MPI_COMM_WORLD);
     if (rank == 0)
     {
-        PrintMatrix(result, k, m);
+        //PrintMatrix(result.data(), k, m);
     }
     MPI_Finalize();
     return 0;
