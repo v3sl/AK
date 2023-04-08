@@ -5,7 +5,7 @@ plt.style.use('_mpl-gallery')
 
 x = []
 y = []
-with open(r'build\data.txt') as f:
+with open(r'data1.txt') as f:
     for line in f:
         data = line.split()
         x.append(int(data[0]) / 1000)
