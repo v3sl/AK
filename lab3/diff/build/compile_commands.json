@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/sasha/Desktop/laba/lab3/diff/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe   -g -o CMakeFiles\\diff.dir\\main.cpp.obj -c C:\\Users\\sasha\\Desktop\\laba\\lab3\\diff\\main.cpp",
+  "file": "C:/Users/sasha/Desktop/laba/lab3/diff/main.cpp",
+  "output": "CMakeFiles/diff.dir/main.cpp.obj"
+}
+]

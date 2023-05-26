@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/sasha/Desktop/laba/lab3/int/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe   -g -o CMakeFiles\\int.dir\\main.cpp.obj -c C:\\Users\\sasha\\Desktop\\laba\\lab3\\int\\main.cpp",
+  "file": "C:/Users/sasha/Desktop/laba/lab3/int/main.cpp",
+  "output": "CMakeFiles/int.dir/main.cpp.obj"
+}
+]
